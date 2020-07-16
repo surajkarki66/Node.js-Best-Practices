@@ -1,0 +1,15 @@
+{
+  "name": "express.js-error-handling",
+  "version": "1.0.0",
+  "description": "This is best practice of error handling in express.js.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Suraj Karki",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
