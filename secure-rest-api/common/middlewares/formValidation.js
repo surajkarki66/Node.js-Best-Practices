@@ -1,14 +1,14 @@
 const { check } = require("express-validator");
 
 exports.validateSignUp = [
-  check("firstname", "First Name is required.")
+  check("firstName", "First Name is required.")
     .notEmpty()
     .isLength({
       min: 4,
       max: 32,
     })
     .withMessage("First name must be between 3 to 32 characters."),
-  check("lastname", "Last Name is required.")
+  check("lastName", "Last Name is required.")
     .notEmpty()
     .isLength({
       min: 4,

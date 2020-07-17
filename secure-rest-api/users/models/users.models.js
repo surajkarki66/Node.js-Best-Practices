@@ -1,4 +1,4 @@
-const mongoose = require("../../common/services/mongoose.service");
+const mongoose = require("../../common/services/mongooseService").mongoose;
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -25,7 +25,7 @@ userSchema.findById = function (cb) {
 const User = mongoose.model("Users", userSchema);
 
 exports.findByEmail = (email) => {
-  return User.find({ email: email });
+  return User.findOne({ email: email });
 };
 
 exports.createUser = (userData) => {
