@@ -32,3 +32,18 @@ exports.createUser = (userData) => {
   const user = new User(userData);
   return user.save();
 };
+
+exports.list = (perPage, page) => {
+  return new Promise((resolve, reject) => {
+    User.find()
+      .limit(perPage)
+      .skip(perPage * page)
+      .exec((err, users) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(users);
+        }
+      });
+  });
+};

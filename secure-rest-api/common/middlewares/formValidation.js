@@ -37,3 +37,16 @@ exports.validateLogin = [
     .matches(/\d/)
     .withMessage("password must contain a number"),
 ];
+
+exports.validateQuery = [
+  check("perPage")
+    .isNumeric()
+    .isInt()
+    .withMessage("Must be an integer.")
+    .isLength({
+      min: 1,
+      max: 50,
+    })
+    .withMessage("Must be between 1 and 50"),
+  check("page").isNumeric().isInt().withMessage("Must be an integer."),
+];
