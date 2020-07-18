@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const { BadRequest, Forbidden, Unauthorized } = require("../../common/utils/errors");
 
 exports.verifyRefreshBodyField = (req, res, next) => {
-  if (req.body && req.body.refresh_token) {
+  if (req.body && req.body.refreshToken) {
     return next();
   } else {
       throw new BadRequest('need to pass refresh_token field')
@@ -14,9 +14,9 @@ exports.verifyRefreshBodyField = (req, res, next) => {
 };
 
 exports.validRefreshNeeded = (req, res, next) => {
-  let b = new Buffer(req.body.refresh_token, "base64");
-  let refresh_token = b.toString();
-  let hash = crypto
+  const b = new Buffer.from(req.body.refreshToken, "base64");
+  const refresh_token = b.toString();
+  const hash = crypto
     .createHmac("sha512", req.jwt.refreshKey)
     .update(req.jwt.userId + secret)
     .digest("base64");

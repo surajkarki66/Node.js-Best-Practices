@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const app = express();
 
 const UsersRouter = require('./users/routes.config');
+const AuthorizationRouter = require('./auth/routesConfig');
 const handleErrors = require('./common/middlewares/handleErrors');
 
 app.use(function (req, res, next) {
@@ -23,6 +24,7 @@ app.use(function (req, res, next) {
 app.use(morgan("dev"));
 app.use(express.json());
 UsersRouter.routesConfig(app);
+AuthorizationRouter.routesConfig(app);
 app.use(handleErrors);
 
 

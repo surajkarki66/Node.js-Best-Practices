@@ -16,7 +16,7 @@ exports.routesConfig = function (app) {
   app.get("/users", [
     validateQuery,
     ValidationMiddleware.validJWTNeeded,
-    PermissionMiddleware.minimumPermissionLevelRequired(PAID),
+    PermissionMiddleware.minimumPermissionLevelRequired(FREE),
     UsersController.list,
   ]);
 };

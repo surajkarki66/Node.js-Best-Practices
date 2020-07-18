@@ -39,7 +39,7 @@ exports.validateLogin = [
 ];
 
 exports.validateQuery = [
-  check("perPage")
+  check("limit")
     .isNumeric()
     .isInt()
     .withMessage("Must be an integer.")
