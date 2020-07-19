@@ -100,3 +100,13 @@ exports.patchById = (req, res, next) => {
       });
   }
 };
+
+exports.removeById = (req, res, next) => {
+  UserModel.removeById(req.params.userId)
+    .then((result) => {
+      res.status(204).json({ success: true });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
