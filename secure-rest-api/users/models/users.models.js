@@ -47,3 +47,27 @@ exports.list = (perPage, page) => {
       });
   });
 };
+
+exports.findById = (id) => {
+  return User.findById(id).then((result) => {
+    result = result.toJSON();
+    delete result._id;
+    delete result.__v;
+    return result;
+  });
+};
+
+exports.patchUser = (id, userData) => {
+  return new Promise((resolve, reject) => {
+    User.findById(id, function (err, user) {
+      if (err) reject(err);
+      for (let i in userData) {
+        user[i] = userData[i];
+      }
+      user.save(function (err, updatedUser) {
+        if (err) return reject(err);
+        resolve(updatedUser);
+      });
+    });
+  });
+};

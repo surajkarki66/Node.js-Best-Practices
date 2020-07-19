@@ -16,7 +16,6 @@ exports.isPasswordAndUserMatch = (req, res, next) => {
           throw new NotFound("User is not exist.");
         } else {
           let passwordFields = user.password.split("$");
-          console.log(passwordFields)
           let salt = passwordFields[0];
           let hash = crypto
             .createHmac("sha512", salt)

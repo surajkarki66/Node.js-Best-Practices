@@ -19,4 +19,16 @@ exports.routesConfig = function (app) {
     PermissionMiddleware.minimumPermissionLevelRequired(FREE),
     UsersController.list,
   ]);
+  app.get("/users/:userId", [
+    ValidationMiddleware.validJWTNeeded,
+    PermissionMiddleware.minimumPermissionLevelRequired(FREE),
+    PermissionMiddleware.onlySameUserOrAdminCanDoThisAction,
+    UsersController.getById,
+  ]);
+  app.patch("/users/:userId", [
+    ValidationMiddleware.validJWTNeeded,
+    PermissionMiddleware.minimumPermissionLevelRequired(FREE),
+    PermissionMiddleware.onlySameUserOrAdminCanDoThisAction,
+    UsersController.patchById,
+  ]);
 };
