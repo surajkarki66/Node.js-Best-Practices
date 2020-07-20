@@ -1,5 +1,6 @@
 const UsersController = require("./controllers/user.controller");
 const PermissionMiddleware = require("../common/middlewares/authPermission");
+const NoPermissionMiddleware = require("../common/middlewares/adminPermission");
 const ValidationMiddleware = require("../common/middlewares/authValidation");
 const config = require("../common/config/env.config");
 const {
@@ -8,8 +9,8 @@ const {
 } = require("../common/middlewares/formValidation");
 
 const ADMIN = config.permissionLevels.ADMIN;
-const PAID = config.permissionLevels.PAID_USER;
 const FREE = config.permissionLevels.NORMAL_USER;
+const PAID = config.permissionLevels.PAID_USER;
 
 exports.routesConfig = function (app) {
   app.post("/users", [validateSignUp, UsersController.signUp]);
@@ -33,6 +34,7 @@ exports.routesConfig = function (app) {
   ]);
   app.delete("/users/:userId", [
     ValidationMiddleware.validJWTNeeded,
+    NoPermissionMiddleware.noPermissionLevelRequired(ADMIN),
     PermissionMiddleware.minimumPermissionLevelRequired(ADMIN),
     UsersController.removeById,
   ]);

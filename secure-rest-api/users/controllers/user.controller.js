@@ -26,7 +26,6 @@ exports.signUp = (req, res, next) => {
               res.status(201).json({ id: result._id });
             })
             .catch((error) => {
-              console.log(error);
               next(error);
             });
         } else {
