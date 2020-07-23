@@ -63,6 +63,15 @@ export default function makeContactList({ database }) {
       .toArray();
     return results.map(documentToContact);
   }
+  async function remove({ contactId, ...contact }) {
+    const db = await database;
+    if (contactId) {
+      contact._id = db.makeId(contactId);
+    }
+
+    const { result } = await db.collection("contacts").deleteMany(contact);
+    return result.n;
+  }
 
   function documentToContact({ _id: contactId, ...doc }) {
     return makeContact({ contactId, ...doc });
