@@ -6,6 +6,10 @@ export default function makeContactList({ database }) {
     getItems,
     add,
     findById,
+    findByEmail,
+    remove,
+    replace,
+    update,
   });
 
   async function getItems({ max = 100, before, after } = {}) {
