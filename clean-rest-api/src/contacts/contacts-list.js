@@ -55,6 +55,14 @@ export default function makeContactList({ database }) {
     }
     return null;
   }
+  async function findByEmail({ emailAddress }) {
+    const db = await database;
+    const results = await db
+      .collection("contacts")
+      .find({ emailAddress })
+      .toArray();
+    return results.map(documentToContact);
+  }
 
   function documentToContact({ _id: contactId, ...doc }) {
     return makeContact({ contactId, ...doc });
