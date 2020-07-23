@@ -72,6 +72,11 @@ export default function makeContactList({ database }) {
     const { result } = await db.collection("contacts").deleteMany(contact);
     return result.n;
   }
+  // todo:
+  async function replace(contact) {}
+
+  // todo:
+  async function update(contact) {}
 
   function documentToContact({ _id: contactId, ...doc }) {
     return makeContact({ contactId, ...doc });
