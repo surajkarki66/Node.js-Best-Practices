@@ -4,6 +4,10 @@ export default function adaptRequest(req = {}) {
     method: req.method,
     pathParams: req.params,
     queryParams: req.query,
-    body: req.body,
+    body: Object.freeze({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      emailAddress: req.body.emailAddress,
+    }),
   });
 }

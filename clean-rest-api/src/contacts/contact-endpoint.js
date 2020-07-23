@@ -12,6 +12,9 @@ export default function makeContactsEndpointHandler({ contactList }) {
       case "POST":
         return postContact(httpRequest);
 
+      case "GET":
+        return getContacts(httpRequest);
+
       default:
         return makeHttpError({
           statusCode: 405,
@@ -62,5 +65,21 @@ export default function makeContactsEndpointHandler({ contactList }) {
             : 500,
       });
     }
+  }
+
+  async function getContacts(httpRequest) {
+    const { id } = httpRequest.pathParams || {};
+    const { max, before, after } = httpRequest.queryParams || {};
+
+    const result = id
+      ? await contactList.findById({ contactId: id })
+      : await contactList.getItems({ max, before, after });
+    return {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      statusCode: 200,
+      data: JSON.stringify(result),
+    };
   }
 }
