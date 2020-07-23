@@ -15,6 +15,9 @@ export default function makeContactsEndpointHandler({ contactList }) {
       case "GET":
         return getContacts(httpRequest);
 
+      case "DELETE":
+        return deleteContact(httpRequest);
+
       default:
         return makeHttpError({
           statusCode: 405,
@@ -45,14 +48,23 @@ export default function makeContactsEndpointHandler({ contactList }) {
 
     try {
       const contact = makeContact(contactInfo);
-      const result = await contactList.add(contact);
-      return {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        statusCode: 201,
-        data: JSON.stringify(result),
-      };
+      const emailAddress = contact.emailAddress;
+      const doc = await contactList.findByEmail({ emailAddress });
+      if (doc) {
+        return makeHttpError({
+          errorMessage: "Email Already taken.",
+          statusCode: 422,
+        });
+      } else {
+        const result = await contactList.add(contact);
+        return {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          statusCode: 201,
+          data: JSON.stringify(result),
+        };
+      }
     } catch (e) {
       return makeHttpError({
         errorMessage: e.message,
@@ -81,5 +93,19 @@ export default function makeContactsEndpointHandler({ contactList }) {
       statusCode: 200,
       data: JSON.stringify(result),
     };
+  }
+
+  async function deleteContact(httpRequest) {
+    const id = httpRequest.pathParams;
+    if (id) {
+      const result = await contactList.remove({ id });
+      return {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        statusCode: 200,
+        data: JSON.stringify(result),
+      };
+    }
   }
 }

@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.all("/contacts", contactsController);
 app.get("/contacts/:id", contactsController);
+app.delete("/contacts/:id", contactsController);
 
 function contactsController(req, res) {
   const httpRequest = adaptRequest(req);

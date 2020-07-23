@@ -61,11 +61,8 @@ export default function makeContactList({ database }) {
   }
   async function findByEmail({ emailAddress }) {
     const db = await database;
-    const results = await db
-      .collection("contacts")
-      .find({ emailAddress })
-      .toArray();
-    return results.map(documentToContact);
+    const results = await db.collection("contacts").findOne({ emailAddress });
+    return results;
   }
   async function remove({ contactId, ...contact }) {
     const db = await database;
@@ -73,8 +70,8 @@ export default function makeContactList({ database }) {
       contact._id = db.makeId(contactId);
     }
 
-    const { result } = await db.collection("contacts").deleteMany(contact);
-    return result.n;
+    const result = await db.collection("contacts").deleteOne(contact._id);
+    return { success: true };
   }
   // todo:
   async function replace(contact) {}
