@@ -1,3 +1,4 @@
+import { ObjectId } from "bson";
 let blogs;
 const DEFAULT_SORT = [["year", -1]];
 export default class BlogsDAO {
@@ -54,6 +55,21 @@ export default class BlogsDAO {
         `Unable to convert cursor to array or problem counting documents, ${e}`
       );
       return { blogsList: [], totalNumBlogs: 0 };
+    }
+  }
+  static async getById(id) {
+    let cursor;
+    try {
+      const query = { _id: ObjectId(id) };
+      cursor = await blogs.find(query).sort(DEFAULT_SORT);
+    } catch (e) {
+      res.status(500).json(e);
+    }
+    try {
+      const blog = await cursor.toArray();
+      return blog;
+    } catch (e) {
+      res.status(500).json(e);
     }
   }
 }

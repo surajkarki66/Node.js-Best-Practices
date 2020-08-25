@@ -64,4 +64,16 @@ export default class BlogController {
       res.status(500).json(e);
     }
   }
+  static async getBlogById(req, res) {
+    const id = req.params.id;
+    try {
+      const response = await BlogsDAO.getById(id);
+      if (response) {
+        const blog = response[0];
+        res.status(200).json(blog);
+      }
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  }
 }

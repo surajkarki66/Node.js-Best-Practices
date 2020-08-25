@@ -21,4 +21,8 @@ router
   .get(dataValidation(schemas.blogLIST, "query"))
   .get(blogCtrl.searchBlogs);
 
+router
+  .route("/:id")
+  .get(dataValidation(schemas.blogDETAIL, "params"))
+  .get(blogCtrl.getBlogById);
 export default router;

@@ -13,8 +13,8 @@ const schemas = {
     text: Joi.string(),
   }),
   // schema for path params
-  blogDETAIL: {
-    id: Joi.number().min(1).required(),
-  },
+  blogDETAIL: Joi.object().keys({
+    id: Joi.string().required(),
+  }),
 };
 export default schemas;
