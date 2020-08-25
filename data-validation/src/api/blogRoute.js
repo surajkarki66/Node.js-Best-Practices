@@ -11,5 +11,14 @@ router
   .route("/create")
   .post(dataValidation(schemas.blogPOST, "body"))
   .post(blogCtrl.create);
+router
+  .route("/")
+  .get(dataValidation(schemas.blogLIST, "query"))
+  .get(blogCtrl.listBlogs);
+
+router
+  .route("/search")
+  .get(dataValidation(schemas.blogLIST, "query"))
+  .get(blogCtrl.searchBlogs);
 
 export default router;
