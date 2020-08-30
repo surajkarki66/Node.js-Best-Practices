@@ -41,14 +41,15 @@ export default class BlogsDAO {
       cursor = await blogs.find(query).project(project).sort(sort);
     } catch (e) {
       console.error(`Unable to issue find command, ${e}`);
-      return { moviesList: [], totalNumMovies: 0 };
+      return { blogsList: [], totalNumBlogs: 0 };
     }
     const displayCursor = cursor
       .skip(parseInt(page) * parseInt(blogsPerPage))
       .limit(parseInt(blogsPerPage));
     try {
       const blogsList = await displayCursor.toArray();
-      const totalNumBlogs = page === 0 ? await blogs.countDocuments(query) : 0;
+      const totalNumBlogs =
+        parseInt(page) === 0 ? await blogs.countDocuments(query) : 0;
       return { blogsList, totalNumBlogs };
     } catch (e) {
       console.error(

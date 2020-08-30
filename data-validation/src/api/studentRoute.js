@@ -12,4 +12,14 @@ router
   .post(dataValidation(studentSchemas.studentPOST, "body"))
   .post(studentCtrl.create);
 
+router
+  .route("/")
+  .get(dataValidation(studentSchemas.studentLIST, "query"))
+  .get(studentCtrl.listStudents);
+
+router
+  .route("/search")
+  .get(dataValidation(studentSchemas.studentLIST, "query"))
+  .get(studentCtrl.searchStudents);
+
 export default router;

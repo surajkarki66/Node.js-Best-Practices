@@ -17,5 +17,13 @@ const schemas = {
       city: Joi.string().required(),
     }),
   }),
+  studentLIST: Joi.object().keys({
+    page: Joi.number().required(),
+    studentsPerPage: Joi.number().required(),
+    name: Joi.string(),
+    year: Joi.number(),
+    street: Joi.string(),
+    city: Joi.string(),
+  }),
 };
 export default schemas;
