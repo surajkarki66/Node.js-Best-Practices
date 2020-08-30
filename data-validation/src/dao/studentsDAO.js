@@ -87,4 +87,19 @@ export default class StudentsDAO {
       return { studentsList: [], totalNumStudents: 0 };
     }
   }
+  static async getById(id) {
+    let cursor;
+    try {
+      const query = { _id: ObjectId(id) };
+      cursor = await students.find(query).sort(DEFAULT_SORT);
+    } catch (e) {
+      res.status(500).json(e);
+    }
+    try {
+      const student = await cursor.toArray();
+      return student;
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  }
 }

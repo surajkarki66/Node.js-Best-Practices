@@ -25,5 +25,9 @@ const schemas = {
     street: Joi.string(),
     city: Joi.string(),
   }),
+  // schema for path params
+  studentDETAIL: Joi.object().keys({
+    id: Joi.string().required(),
+  }),
 };
 export default schemas;

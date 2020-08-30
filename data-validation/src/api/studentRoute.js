@@ -22,4 +22,9 @@ router
   .get(dataValidation(studentSchemas.studentLIST, "query"))
   .get(studentCtrl.searchStudents);
 
+router
+  .route("/:id")
+  .get(dataValidation(studentSchemas.studentDETAIL, "params"))
+  .get(studentCtrl.getStudentsById);
+
 export default router;

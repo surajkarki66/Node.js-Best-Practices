@@ -78,4 +78,16 @@ export default class StudentController {
       res.status(500).json(e);
     }
   }
+  static async getStudentsById(req, res) {
+    const id = req.params.id;
+    try {
+      const response = await StudentsDAO.getById(id);
+      if (response) {
+        const student = response[0];
+        res.status(200).json(student);
+      }
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  }
 }
