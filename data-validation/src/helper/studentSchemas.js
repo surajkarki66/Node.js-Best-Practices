@@ -1,6 +1,6 @@
 import Joi from "joi";
 const schemas = {
-  // schema for body
+  // schema for body => One-to-One Relationships with Embedded Documents
   studentPOST: Joi.object().keys({
     name: Joi.string().alphanum().min(3).max(30).required(),
     year: Joi.number().integer().min(2017).max(3017),

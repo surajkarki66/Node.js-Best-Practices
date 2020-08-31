@@ -1,6 +1,6 @@
 import Joi from "joi";
 const schemas = {
-  // schema for body
+  // schema for body => This is simple one-to-one relationship in mongo db.
   blogPOST: Joi.object().keys({
     title: Joi.string().required(),
     description: Joi.string().required(),
