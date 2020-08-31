@@ -29,5 +29,10 @@ const schemas = {
   studentDETAIL: Joi.object().keys({
     id: Joi.string().required(),
   }),
+  studentFACETED: Joi.object().keys({
+    page: Joi.number().required(),
+    studentsPerPage: Joi.number().required(),
+    major: Joi.string().required(),
+  }),
 };
 export default schemas;

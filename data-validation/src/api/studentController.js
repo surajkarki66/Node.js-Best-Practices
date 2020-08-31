@@ -90,4 +90,28 @@ export default class StudentController {
       res.status(500).json(e);
     }
   }
+  static async studentsFacetedSearch(req, res) {
+    const { page, studentsPerPage, major } = req.query;
+
+    const filters = { major: major };
+
+    const facetedSearchResult = await StudentsDAO.facetedSearch({
+      filters,
+      page,
+      studentsPerPage,
+    });
+    const response = {
+      students: facetedSearchResult.students,
+      facets: {
+        year: facetedSearchResult.year,
+        gpa: facetedSearchResult.gpa,
+      },
+      page: page,
+      filters,
+      entries_per_page: studentsPerPage,
+      total_results: facetedSearchResult.count,
+    };
+
+    res.json(response);
+  }
 }

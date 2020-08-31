@@ -102,4 +102,67 @@ export default class StudentsDAO {
       res.status(500).json(e);
     }
   }
+
+  static async facetedSearch({
+    filters = null,
+    page = 0,
+    studentsPerPage = 10,
+  } = {}) {
+    const matchStage = { $match: filters };
+    const sortStage = { $sort: { name: 1 } };
+    const countingPipeline = [matchStage, sortStage, { $count: "count" }];
+    const skipStage = { $skip: parseInt(studentsPerPage) * parseInt(page) };
+    const limitStage = { $limit: parseInt(studentsPerPage) };
+    const facetStage = {
+      $facet: {
+        year: [
+          {
+            $bucketAuto: {
+              groupBy: "$year",
+              buckets: 10,
+              output: {
+                count: { $sum: 1 },
+              },
+            },
+          },
+        ],
+        gpa: [
+          {
+            $bucketAuto: {
+              groupBy: "$gpa",
+              buckets: 3,
+              output: {
+                count: { $sum: 1 },
+              },
+            },
+          },
+        ],
+        students: [
+          {
+            $addFields: {
+              name: "$name",
+            },
+          },
+        ],
+      },
+    };
+    const queryPipeline = [
+      matchStage,
+      sortStage,
+      skipStage,
+      limitStage,
+      facetStage,
+    ];
+    try {
+      const results = await (await students.aggregate(queryPipeline)).next();
+      const count = await (await students.aggregate(countingPipeline)).next();
+      return {
+        ...results,
+        ...count,
+      };
+    } catch (e) {
+      console.log(e);
+      return { error: "Results too large, be more restrictive in filter" };
+    }
+  }
 }

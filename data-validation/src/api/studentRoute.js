@@ -23,6 +23,11 @@ router
   .get(studentCtrl.searchStudents);
 
 router
+  .route("/facetSearch")
+  .get(dataValidation(studentSchemas.studentFACETED, "query"))
+  .get(studentCtrl.studentsFacetedSearch);
+
+router
   .route("/:id")
   .get(dataValidation(studentSchemas.studentDETAIL, "params"))
   .get(studentCtrl.getStudentsById);
