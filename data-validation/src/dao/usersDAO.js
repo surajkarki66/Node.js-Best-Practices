@@ -146,4 +146,21 @@ db.users.update(
   { $pull: { address: { $elemMatch: { street: "1 Avenue" , city: "California", cc: "USA" } } } },
   { multi: true }
 )
+
+<<<<<<<<<<<<<<<<<<<<<<<<<< Adding a document in a array of embedded documents >>>>>>>>>>>>>>>>>>>>>>>>>
+// Use $push Operator with Multiple Modifiers¶
+db.users.update(
+   { name: "Binish" },
+   {
+     $push: {
+       address: {
+          $each: [ { street: "1 Avenue" , city: "California", cc: "USA" }],  // you can also push multiple document.
+          $sort: { cc: -1 },
+          $slice: 2
+       }
+     }
+   }
+)
+
+
 */
