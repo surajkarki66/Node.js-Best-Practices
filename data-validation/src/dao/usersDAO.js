@@ -127,4 +127,23 @@ db.users.updateOne(
    { name: "Binish", "address.city": "Bhaktapur" },
    { $set: { "address.$.city" : "Kathmandu" } }
 )
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Removing a document from a array of embedded documents >>>>>>>>>>>>>>>>>>>>>>>>>
+
+// Remove Items from an Array of Documents
+db.users.update(
+  {name: "Binish" },
+  { $pull: { address: { street: "1 Avenue" , city: "California", cc: "USA" } } },
+  { multi: true }
+)
+
+
+
+db.users.update(
+  {name: "Binish"},
+  { $pull: { address: { $elemMatch: { street: "1 Avenue" , city: "California", cc: "USA" } } } },
+  { multi: true }
+)
 */
