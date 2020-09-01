@@ -47,3 +47,84 @@ export default class UsersDAO {
     }
   }
 }
+
+/*
+
+<<<<<<<<<<<<<<<<<<<<<<<<<< Query an Array of Embedded Documents >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+// CMD: in mongo shell
+db.user.find({
+  address: {
+    street: "Buddhauli",
+    city: "Khairahani",
+    cc: "Nepal",
+  },
+});
+
+
+// In Node.js
+const cursor = db.collection("users").find({
+  address: {
+    street: "Buddhauli",
+    city: "Khairahani",
+    cc: "Nepal",
+  },
+});
+
+
+// Specify a Query Condition on a Field in an Array of Documents¶
+// Specify a Query Condition on a Field Embedded in an Array of Documents
+
+// If you do not know the index position of the document nested in the array, concatenate the name of the array field, with a dot (.) and the name of the field in the nested document.
+// CMD in mongo shell
+db.users.find({ "address.cc": "Nepal" });
+db.users.find({ "address.city": "Khairahani" });
+
+
+// in node.js
+const cursor = db.collection("users").find({
+  "address.cc": "Nepal",
+});
+const cursor = db.collection("users").find({
+  "address.city": "Khairahani",
+});
+
+
+
+// Use the Array Index to Query for a Field in the Embedded Document
+db.user.find({ "address.1.cc": "USA" });
+db.user.find({ "address.0.street": "Rani Ban" });
+
+// In node.js
+const cursor = db.collection("users").find({
+  "address.0.street": "Rani Ban",
+});
+
+
+
+//Specify Multiple Conditions for Array of Documents
+//A Single Nested Document Meets Multiple Query Conditions on Nested Fields¶
+
+db.users.find({
+  address: {
+    $elemMatch: { city: "Khairahani", street: "Buddhauli", cc: "Nepal" },
+  },
+});
+
+const cursor = db.collection("inventory").find({
+  address: {
+    $elemMatch: { city: "Khairahani", street: "Buddhauli", cc: "Nepal" },
+  },
+});
+
+
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Updating array of embedded documents >>>>>>>>>>>>>>>>>>>>>>>>>
+// You must include the array field as part of the query document.
+db.users.updateOne(
+   { name: "Binish", "address.city": "Bhaktapur" },
+   { $set: { "address.$.city" : "Kathmandu" } }
+)
+*/

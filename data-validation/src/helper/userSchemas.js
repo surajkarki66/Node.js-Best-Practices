@@ -15,7 +15,7 @@ const schemas = {
         Joi.object().keys({
           street: Joi.string().max(30).required(),
           city: Joi.string().max(30).required(),
-          country: Joi.string().max(10).required(),
+          cc: Joi.string().max(10).required(),
         })
       ),
   }),
