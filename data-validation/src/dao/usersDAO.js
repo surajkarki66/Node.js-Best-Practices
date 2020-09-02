@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 let users;
 const DEFAULT_SORT = [["name", 1]];
 export default class UsersDAO {
@@ -14,10 +13,11 @@ export default class UsersDAO {
   }
   static async create(userInfo) {
     try {
-      await users.insertOne(userInfo);
-      return { success: true };
+      const data = await users.insertOne(userInfo);
+      const user = data.ops[0];
+      return { success: true, user };
     } catch (e) {
-      return { error: e };
+      return;
     }
   }
   static async getUsers({ filters = null, page = 0, usersPerPage = 10 } = {}) {

@@ -1,6 +1,7 @@
 import UsersDAO from "../dao/usersDAO";
+import ApiError from "../error/ApiError";
 export default class UserController {
-  static async addUser(req, res) {
+  static async addUser(req, res, next) {
     try {
       const user = req.body;
       const data = await UsersDAO.create(user);
@@ -8,10 +9,11 @@ export default class UserController {
         res.status(201).json({ success: true });
       }
     } catch (e) {
-      res.status(500).json({ error: e });
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
-  static async listUser(req, res) {
+  static async listUser(req, res, next) {
     try {
       const { page, usersPerPage } = req.query;
       const { usersList, totalNumUsers } = await UsersDAO.getUsers({
@@ -25,9 +27,10 @@ export default class UserController {
         entries_per_page: usersPerPage,
         total_results: totalNumUsers,
       };
-      res.json(response);
+      res.status(200).json(response);
     } catch (e) {
-      console.log(e);
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
 }
