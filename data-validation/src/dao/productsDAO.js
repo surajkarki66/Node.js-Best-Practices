@@ -21,6 +21,7 @@ export default class ProductsDAO {
       const product = data.ops[0];
       return { success: true, product };
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }
@@ -38,6 +39,7 @@ export default class ProductsDAO {
       );
       return { success: true };
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }

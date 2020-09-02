@@ -10,7 +10,7 @@ export default class StudentsDAO {
       students = await conn.db(process.env.NS).collection("students");
     } catch (e) {
       console.error(
-        `Unable to establish collection handles in studentDAO: ${e}`
+        `Unable to establish collection handles in studentDAO: ${e.message}`
       );
     }
   }
@@ -20,6 +20,7 @@ export default class StudentsDAO {
       const student = data.ops[0];
       return { success: true, student };
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }
@@ -94,12 +95,14 @@ export default class StudentsDAO {
       const query = { _id: ObjectId(id) };
       cursor = await students.find(query).sort(DEFAULT_SORT);
     } catch (e) {
+      console.error(e.message);
       return;
     }
     try {
       const student = await cursor.toArray();
       return student;
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }
