@@ -9,16 +9,17 @@ export default class BlogsDAO {
     try {
       blogs = await conn.db(process.env.NS).collection("blogs");
     } catch (e) {
-      console.error(`Unable to establish collection handles in blogDAO: ${e}`);
+      return new Error(e);
     }
   }
 
-  static async addBlog(blogInfo) {
+  static async create(blogInfo) {
     try {
-      await blogs.insertOne(blogInfo);
-      return { success: true };
+      const data = await blogs.insertOne(blogInfo);
+      const blog = data.ops[0];
+      return { success: true, blog };
     } catch (e) {
-      return { error: e };
+      return;
     }
   }
   static textSearchQuery(text) {
@@ -62,15 +63,21 @@ export default class BlogsDAO {
     let cursor;
     try {
       const query = { _id: ObjectId(id) };
-      cursor = await blogs.find(query).sort(DEFAULT_SORT);
+      cursor = await blog.find(query).sort(DEFAULT_SORT);
     } catch (e) {
-      res.status(500).json(e);
+      console.error(
+        `Unable to convert cursor to array or problem counting documents, ${e}`
+      );
+      return;
     }
     try {
       const blog = await cursor.toArray();
       return blog;
     } catch (e) {
-      res.status(500).json(e);
+      console.error(
+        `Unable to convert cursor to array or problem counting documents, ${e}`
+      );
+      return;
     }
   }
 }

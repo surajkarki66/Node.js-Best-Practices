@@ -6,6 +6,7 @@ import Student from "./api/studentRoute";
 import User from "./api/userRoute";
 import Part from "./api/partRoute";
 import Product from "./api/productRoute";
+import apiErrorHandler from "./error/api-error-handler";
 
 const app = express();
 
@@ -17,4 +18,5 @@ app.use("/api/user", User);
 app.use("/api/part", Part);
 app.use("/api/product", Product);
 
+app.use(apiErrorHandler);
 export default app;

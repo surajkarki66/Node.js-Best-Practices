@@ -10,7 +10,7 @@ const router = new Router();
 router
   .route("/create")
   .post(dataValidation(blogSchemas.blogPOST, "body"))
-  .post(blogCtrl.create);
+  .post(blogCtrl.addBlog);
 router
   .route("/")
   .get(dataValidation(blogSchemas.blogLIST, "query"))

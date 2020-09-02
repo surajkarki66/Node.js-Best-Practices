@@ -1,30 +1,37 @@
 import BlogsDAO from "../dao/blogsDAO";
+import ApiError from "../error/ApiError";
 export default class BlogController {
-  static async create(req, res) {
+  static async addBlog(req, res, next) {
     try {
       const blogFromBody = req.body;
-      const data = await BlogsDAO.addBlog(blogFromBody);
+      const data = await BlogsDAO.create(blogFromBody);
       if (data.success) {
-        res.status(201).json({ success: true });
+        return res.status(201).json({ success: true, data });
       }
     } catch (e) {
-      res.status(500).json({ error: e });
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
   static async listBlogs(req, res, next) {
-    const { page, blogsPerPage } = req.query;
-    const { blogsList, totalNumBlogs } = await BlogsDAO.getBlogs({
-      page,
-      blogsPerPage,
-    });
-    let response = {
-      blogs: blogsList,
-      page: page,
-      filters: {},
-      entries_per_page: blogsPerPage,
-      total_results: totalNumBlogs,
-    };
-    res.json(response);
+    try {
+      const { page, blogsPerPage } = req.query;
+      const { blogsList, totalNumBlogs } = await BlogsDAO.getBlogs({
+        page,
+        blogsPerPage,
+      });
+      const response = {
+        blogs: blogsList,
+        page: page,
+        filters: {},
+        entries_per_page: blogsPerPage,
+        total_results: totalNumBlogs,
+      };
+      res.status(200).json(response);
+    } catch (e) {
+      next(ApiError.internal("Something went wrong"));
+      return;
+    }
   }
   static async searchBlogs(req, res, next) {
     const { page, blogsPerPage } = req.query;
@@ -32,7 +39,8 @@ export default class BlogController {
     try {
       searchType = Object.keys(req.query)[0];
     } catch (error) {
-      console.error(`No search keys specified: ${error}`);
+      next(ApiError.internal(`No search keys specified: ${error}`));
+      return;
     }
     let filters = {};
     switch (searchType) {
@@ -61,7 +69,8 @@ export default class BlogController {
       };
       res.status(200).json(response);
     } catch (e) {
-      res.status(500).json(e);
+      next(ApiError.internal(`Something went wrong while searching blogs.`));
+      return;
     }
   }
   static async getBlogById(req, res) {
@@ -73,7 +82,8 @@ export default class BlogController {
         res.status(200).json(blog);
       }
     } catch (e) {
-      res.status(500).json(e);
+      next(ApiError.internal(`Something went wrong`));
+      return;
     }
   }
 }
