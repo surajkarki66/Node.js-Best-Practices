@@ -9,7 +9,7 @@ export default class StudentController {
         res.status(201).json({ success: true, data });
       }
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -29,7 +29,7 @@ export default class StudentController {
       };
       return res.json(response);
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -39,7 +39,7 @@ export default class StudentController {
     try {
       searchType = Object.keys(req.query)[0];
     } catch (error) {
-      next(ApiError.internal(`No search keys specified: ${error}`));
+      next(ApiError.internal(`No search keys specified: ${error.message}`));
       return;
     }
     let filters = {};
@@ -83,7 +83,7 @@ export default class StudentController {
       };
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal("Somthing went wrong."));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -96,7 +96,7 @@ export default class StudentController {
         res.status(200).json(student);
       }
     } catch (e) {
-      next(ApiError.internal("Something went wrong."));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -125,7 +125,7 @@ export default class StudentController {
 
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal("Something went wrong."));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
