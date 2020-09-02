@@ -6,7 +6,7 @@ export default class BlogController {
       const blogFromBody = req.body;
       const data = await BlogsDAO.create(blogFromBody);
       if (data.success) {
-        return res.status(201).json({ success: true, data });
+        return res.status(201).json(data);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -29,7 +29,7 @@ export default class BlogController {
       };
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -39,7 +39,7 @@ export default class BlogController {
     try {
       searchType = Object.keys(req.query)[0];
     } catch (error) {
-      next(ApiError.internal(`No search keys specified: ${error}`));
+      next(ApiError.internal(`No search keys specified: ${error.message}`));
       return;
     }
     let filters = {};
@@ -69,7 +69,7 @@ export default class BlogController {
       };
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal(`Something went wrong while searching blogs.`));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -82,7 +82,7 @@ export default class BlogController {
         res.status(200).json(blog);
       }
     } catch (e) {
-      next(ApiError.internal(`Something went wrong`));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
