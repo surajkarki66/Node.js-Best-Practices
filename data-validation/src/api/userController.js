@@ -9,7 +9,7 @@ export default class UserController {
         res.status(201).json({ success: true });
       }
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -29,7 +29,7 @@ export default class UserController {
       };
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
