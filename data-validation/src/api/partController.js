@@ -1,7 +1,7 @@
 import PartsDAO from "../dao/partsDAO";
-import ProductDAO from "../dao/productsDAO";
+import ApiError from "../error/ApiError";
 export default class PartController {
-  static async addPart(req, res) {
+  static async addPart(req, res, next) {
     try {
       const part = req.body;
       const data = await PartsDAO.create(part);
@@ -9,7 +9,8 @@ export default class PartController {
         res.status(201).json(data);
       }
     } catch (e) {
-      res.status(500).json({ error: e });
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
   static async listPart(req, res) {
@@ -26,9 +27,10 @@ export default class PartController {
         entries_per_page: partsPerPage,
         total_results: totalNumParts,
       };
-      res.json(response);
+      res.status(200).json(response);
     } catch (e) {
-      console.log(e);
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
 }
