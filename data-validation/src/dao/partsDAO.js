@@ -18,7 +18,7 @@ export default class PartsDAO {
       const part = data.ops[0];
       return { success: true, part };
     } catch (e) {
-      return { error: e };
+      return;
     }
   }
 

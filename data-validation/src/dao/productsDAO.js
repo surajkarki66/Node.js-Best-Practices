@@ -21,7 +21,7 @@ export default class ProductsDAO {
       const product = data.ops[0];
       return { success: true, product };
     } catch (e) {
-      return { error: e };
+      return;
     }
   }
   static async addPart(product_id, part_id) {
@@ -38,7 +38,7 @@ export default class ProductsDAO {
       );
       return { success: true };
     } catch (e) {
-      console.log(e);
+      return;
     }
   }
 
