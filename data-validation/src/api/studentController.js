@@ -1,38 +1,46 @@
 import StudentsDAO from "../dao/studentsDAO";
+import ApiError from "../error/ApiError";
 export default class StudentController {
-  static async create(req, res) {
+  static async addStudent(req, res, next) {
     try {
       const student = req.body;
-      const data = await StudentsDAO.addStudent(student);
+      const data = await StudentsDAO.create(student);
       if (data.success) {
-        res.status(201).json({ success: true });
+        res.status(201).json({ success: true, data });
       }
     } catch (e) {
-      res.status(500).json({ error: e });
+      next(ApiError.internal("Something went wrong"));
+      return;
     }
   }
-  static async listStudents(req, res) {
-    const { page, studentsPerPage } = req.query;
-    const { studentsList, totalNumStudents } = await StudentsDAO.getStudents({
-      page,
-      studentsPerPage,
-    });
-    let response = {
-      students: studentsList,
-      page: page,
-      filters: {},
-      entries_per_page: studentsPerPage,
-      total_results: totalNumStudents,
-    };
-    res.json(response);
+  static async listStudents(req, res, next) {
+    try {
+      const { page, studentsPerPage } = req.query;
+      const { studentsList, totalNumStudents } = await StudentsDAO.getStudents({
+        page,
+        studentsPerPage,
+      });
+      const response = {
+        students: studentsList,
+        page: page,
+        filters: {},
+        entries_per_page: studentsPerPage,
+        total_results: totalNumStudents,
+      };
+      return res.json(response);
+    } catch (e) {
+      next(ApiError.internal("Something went wrong"));
+      return;
+    }
   }
-  static async searchStudents(req, res) {
+  static async searchStudents(req, res, next) {
     const { page, studentsPerPage } = req.query;
     let searchType;
     try {
       searchType = Object.keys(req.query)[0];
     } catch (error) {
-      console.error(`No search keys specified: ${error}`);
+      next(ApiError.internal(`No search keys specified: ${error}`));
+      return;
     }
     let filters = {};
     switch (searchType) {
@@ -75,10 +83,11 @@ export default class StudentController {
       };
       res.status(200).json(response);
     } catch (e) {
-      res.status(500).json(e);
+      next(ApiError.internal("Somthing went wrong."));
+      return;
     }
   }
-  static async getStudentsById(req, res) {
+  static async getStudentsById(req, res, next) {
     const id = req.params.id;
     try {
       const response = await StudentsDAO.getById(id);
@@ -87,31 +96,37 @@ export default class StudentController {
         res.status(200).json(student);
       }
     } catch (e) {
-      res.status(500).json(e);
+      next(ApiError.internal("Something went wrong."));
+      return;
     }
   }
-  static async studentsFacetedSearch(req, res) {
-    const { page, studentsPerPage, major } = req.query;
+  static async studentsFacetedSearch(req, res, next) {
+    try {
+      const { page, studentsPerPage, major } = req.query;
 
-    const filters = { major: major };
+      const filters = { major: major };
 
-    const facetedSearchResult = await StudentsDAO.facetedSearch({
-      filters,
-      page,
-      studentsPerPage,
-    });
-    const response = {
-      students: facetedSearchResult.students,
-      facets: {
-        year: facetedSearchResult.year,
-        gpa: facetedSearchResult.gpa,
-      },
-      page: page,
-      filters,
-      entries_per_page: studentsPerPage,
-      total_results: facetedSearchResult.count,
-    };
+      const facetedSearchResult = await StudentsDAO.facetedSearch({
+        filters,
+        page,
+        studentsPerPage,
+      });
+      const response = {
+        students: facetedSearchResult.students,
+        facets: {
+          year: facetedSearchResult.year,
+          gpa: facetedSearchResult.gpa,
+        },
+        page: page,
+        filters,
+        entries_per_page: studentsPerPage,
+        total_results: facetedSearchResult.count,
+      };
 
-    res.json(response);
+      res.status(200).json(response);
+    } catch (e) {
+      next(ApiError.internal("Something went wrong."));
+      return;
+    }
   }
 }

@@ -10,7 +10,7 @@ const router = new Router();
 router
   .route("/create")
   .post(dataValidation(studentSchemas.studentPOST, "body"))
-  .post(studentCtrl.create);
+  .post(studentCtrl.addStudent);
 
 router
   .route("/")

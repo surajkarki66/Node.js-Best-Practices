@@ -14,12 +14,13 @@ export default class StudentsDAO {
       );
     }
   }
-  static async addStudent(studentInfo) {
+  static async create(studentInfo) {
     try {
-      await students.insertOne(studentInfo);
-      return { success: true };
+      const data = await student.insertOne(studentInfo);
+      const student = data.ops[0];
+      return { success: true, student };
     } catch (e) {
-      return { error: e };
+      return;
     }
   }
   static textSearchQuery(text) {
@@ -93,13 +94,13 @@ export default class StudentsDAO {
       const query = { _id: ObjectId(id) };
       cursor = await students.find(query).sort(DEFAULT_SORT);
     } catch (e) {
-      res.status(500).json(e);
+      return;
     }
     try {
       const student = await cursor.toArray();
       return student;
     } catch (e) {
-      res.status(500).json(e);
+      return;
     }
   }
 
@@ -161,7 +162,6 @@ export default class StudentsDAO {
         ...count,
       };
     } catch (e) {
-      console.log(e);
       return { error: "Results too large, be more restrictive in filter" };
     }
   }
