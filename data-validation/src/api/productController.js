@@ -9,7 +9,7 @@ export default class ProductController {
         res.status(201).json(data);
       }
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -29,7 +29,7 @@ export default class ProductController {
       };
       res.status(200).json(response);
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
@@ -43,7 +43,7 @@ export default class ProductController {
         res.status(200).json(product);
       }
     } catch (e) {
-      next(ApiError.internal("Something went wrong"));
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
     }
   }
