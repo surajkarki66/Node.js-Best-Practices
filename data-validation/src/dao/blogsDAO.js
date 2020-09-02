@@ -9,6 +9,7 @@ export default class BlogsDAO {
     try {
       blogs = await conn.db(process.env.NS).collection("blogs");
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }

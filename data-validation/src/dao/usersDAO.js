@@ -8,7 +8,10 @@ export default class UsersDAO {
     try {
       users = await conn.db(process.env.NS).collection("users");
     } catch (e) {
-      console.error(`Unable to establish collection handles in userDAO: ${e}`);
+      console.error(
+        `Unable to establish collection handles in userDAO: ${e.message}`
+      );
+      return;
     }
   }
   static async create(userInfo) {
@@ -17,6 +20,7 @@ export default class UsersDAO {
       const user = data.ops[0];
       return { success: true, user };
     } catch (e) {
+      console.error(e.message);
       return;
     }
   }
