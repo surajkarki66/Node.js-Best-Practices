@@ -1,11 +1,12 @@
 import PartsDAO from "../dao/partsDAO";
+import ProductDAO from "../dao/productsDAO";
 export default class PartController {
   static async addPart(req, res) {
     try {
       const part = req.body;
       const data = await PartsDAO.create(part);
       if (data.success) {
-        res.status(201).json({ success: true });
+        res.status(201).json(data);
       }
     } catch (e) {
       res.status(500).json({ error: e });

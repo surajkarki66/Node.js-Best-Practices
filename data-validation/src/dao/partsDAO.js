@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 let parts;
 const DEFAULT_SORT = [["name", -1]];
 export default class PartsDAO {
@@ -15,8 +14,9 @@ export default class PartsDAO {
 
   static async create(partInfo) {
     try {
-      await parts.insertOne(partInfo);
-      return { success: true };
+      const data = await parts.insertOne(partInfo);
+      const part = data.ops[0];
+      return { success: true, part };
     } catch (e) {
       return { error: e };
     }

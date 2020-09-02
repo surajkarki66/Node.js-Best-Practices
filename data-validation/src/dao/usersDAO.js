@@ -161,29 +161,7 @@ db.users.update(
      }
    }
 )
-db.products.aggregate([
-  {
-    $lookup: {
-      from: "parts",
-      localField: "parts",
-      foreignField: "_id",
-      as: "parts",
-    },
-  },
-]);
-db.products.update(
-  { name: "Inspiron 5567" },
-  {
-    $push: {
-      parts: {
-        $each: [
-          ObjectId("5f4e71ac54f6b5c622f1fc56"),
-          ObjectId("5f4e71ac54f6b5c622f1fc57"),
-        ],
-      },
-    },
-  }
-);
+
 
 
 */

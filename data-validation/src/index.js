@@ -6,6 +6,7 @@ import BlogsDAO from "./dao/blogsDAO";
 import StudentsDAO from "./dao/studentsDAO";
 import UsersDAO from "./dao/usersDAO";
 import PartsDAO from "./dao/partsDAO";
+import ProductsDAO from "./dao/productsDAO";
 const port = process.env.PORT || 8000;
 
 dotenv.config();
@@ -24,6 +25,7 @@ MongoClient.connect(process.env.DB_URI, {
     await StudentsDAO.injectDB(client);
     await UsersDAO.injectDB(client);
     await PartsDAO.injectDB(client);
+    await ProductsDAO.injectDB(client);
     app.listen(port, () => {
       console.log(`listening on port ${port}`);
     });
