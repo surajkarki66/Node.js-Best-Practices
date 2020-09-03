@@ -10,6 +10,10 @@ export default class BlogsDAO {
     }
     try {
       blogs = await conn.db(process.env.NS).collection("blogs");
+      logger.info(
+        `Connected to blogs collection of ${process.env.NS} database.`,
+        "BlogsDAO.injectDB()"
+      );
     } catch (e) {
       logger.error(
         `Error while injecting DB: ${e.message}`,
@@ -78,6 +82,10 @@ export default class BlogsDAO {
     try {
       const query = { _id: ObjectId(id) };
       cursor = await blogs.find(query).sort(DEFAULT_SORT);
+      logger.info(
+        `Connected to blog collection of ${process.env.NS} database.`,
+        "BlogsDAO.injectDB()"
+      );
     } catch (e) {
       logger.error("Error occurred: " + e.message, "getById()");
       throw e;
