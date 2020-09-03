@@ -10,6 +10,7 @@ import appSettings from "../config/app-settings";
  */
 let db;
 let mongodbClient;
+logger.setLogLevel(logger.Level.DEBUG);
 
 /**
  * Initializes the MongoDB.
@@ -33,6 +34,7 @@ function dbConnect() {
       mongodb.MongoClient.connect(
         appSettings.mongodb_url,
         { useNewUrlParser: true },
+        { useUnifiedTopology: true },
         function (err, client) {
           if (err) {
             logger.error(
