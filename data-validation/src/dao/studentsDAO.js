@@ -1,6 +1,8 @@
 import { ObjectId } from "bson";
-let students;
+
+import logger from "../utils/logger";
 const DEFAULT_SORT = [["name", 1]];
+let students;
 export default class StudentsDAO {
   static async injectDB(conn) {
     if (students) {
@@ -8,20 +10,25 @@ export default class StudentsDAO {
     }
     try {
       students = await conn.db(process.env.NS).collection("students");
-    } catch (e) {
-      console.error(
-        `Unable to establish collection handles in studentDAO: ${e.message}`
+      logger.info(
+        `Connected to students collection of ${process.env.NS} database.`,
+        "StudentsDAO.injectDB()"
       );
+    } catch (e) {
+      logger.error(
+        `Error while injecting DB: ${e.message}`,
+        "StudentsDAO.injectDB()"
+      );
+      throw e;
     }
   }
   static async create(studentInfo) {
     try {
-      const data = await student.insertOne(studentInfo);
-      const student = data.ops[0];
-      return { success: true, student };
+      const result = await students.insertOne(studentInfo);
+      return { data: { createdId: result.insertedId }, statusCode: 201 };
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error("Error occurred: " + e.message, "create()");
+      throw e;
     }
   }
   static textSearchQuery(text) {
@@ -71,22 +78,30 @@ export default class StudentsDAO {
     try {
       cursor = await students.find(query).project(project).sort(sort);
     } catch (e) {
-      console.error(`Unable to issue find command, ${e}`);
-      return { studentsList: [], totalNumStudents: 0 };
+      logger.error(`Unable to issue find command, ${e.message}`);
+      return {
+        data: [],
+        totalNumStudents: 0,
+        statusCode: 404,
+      };
     }
     const displayCursor = cursor
       .skip(parseInt(page) * parseInt(studentsPerPage))
       .limit(parseInt(studentsPerPage));
     try {
-      const studentsList = await displayCursor.toArray();
+      const documents = await displayCursor.toArray();
       const totalNumStudents =
         parseInt(page) === 0 ? await students.countDocuments(query) : 0;
-      return { studentsList, totalNumStudents };
+      return {
+        data: documents,
+        totalNumStudents,
+        statusCode: documents.length > 0 ? 200 : 404,
+      };
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`
       );
-      return { studentsList: [], totalNumStudents: 0 };
+      throw e;
     }
   }
   static async getById(id) {
@@ -95,15 +110,24 @@ export default class StudentsDAO {
       const query = { _id: ObjectId(id) };
       cursor = await students.find(query).sort(DEFAULT_SORT);
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error("Error occurred: " + e.message, "getById()");
+      throw e;
     }
     try {
       const student = await cursor.toArray();
-      return student;
+      if (student) {
+        return { data: student, statusCode: 200 };
+      } else {
+        const message = "No document matching id: " + id + " could be found!";
+        logger.error(message, "getById()");
+        return { data: [], statusCode: 404 };
+      }
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`,
+        "getById()"
+      );
+      throw e;
     }
   }
 
