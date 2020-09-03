@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js"
+    "pre-run": "mkdir -p ./logs",
+    "start": "npm run pre-run && nodemon --exec babel-node src/utils/test.js"
   },
   "keywords": [],
   "author": "",
