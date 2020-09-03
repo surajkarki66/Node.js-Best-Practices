@@ -1,4 +1,6 @@
 import { ObjectId } from "bson";
+
+import logger from "../utils/logger";
 let products;
 const DEFAULT_SORT = [["name", -1]];
 export default class ProductsDAO {
@@ -9,38 +11,21 @@ export default class ProductsDAO {
     try {
       products = await conn.db(process.env.NS).collection("products");
     } catch (e) {
-      console.error(
-        `Unable to establish collection handles in productDAO: ${e}`
+      logger.error(
+        `Error while injecting DB: ${e.message}`,
+        "ProductsDAO.injectDB()"
       );
+      throw e;
     }
   }
 
   static async create(productInfo) {
     try {
-      const data = await products.insertOne(productInfo);
-      const product = data.ops[0];
-      return { success: true, product };
+      const result = await products.insertOne(productInfo);
+      return { data: { createdId: result.insertedId }, statusCode: 201 };
     } catch (e) {
-      console.error(e.message);
-      return;
-    }
-  }
-  static async addPart(product_id, part_id) {
-    try {
-      await products.updateOne(
-        { _id: ObjectId(product_id) },
-        {
-          $push: {
-            parts: {
-              $each: [ObjectId(part_id)],
-            },
-          },
-        }
-      );
-      return { success: true };
-    } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error("Error occurred: " + e.message, "create()");
+      throw e;
     }
   }
 
@@ -55,22 +40,30 @@ export default class ProductsDAO {
     try {
       cursor = await products.find(query).project(project).sort(sort);
     } catch (e) {
-      console.error(`Unable to issue find command, ${e}`);
-      return { productsList: [], totalNumProducts: 0 };
+      logger.error(`Unable to issue find command, ${e.message}`);
+      return {
+        data: [],
+        totalNumProducts: 0,
+        statusCode: 404,
+      };
     }
     const displayCursor = cursor
       .skip(parseInt(page) * parseInt(productsPerPage))
       .limit(parseInt(productsPerPage));
     try {
-      const productsList = await displayCursor.toArray();
+      const documents = await displayCursor.toArray();
       const totalNumProducts =
         parseInt(page) === 0 ? await products.countDocuments(query) : 0;
-      return { productsList, totalNumProducts };
+      return {
+        data: documents,
+        totalNumProducts,
+        statusCode: documents.length > 0 ? 200 : 404,
+      };
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`
       );
-      return { productsList: [], totalNumProducts: 0 };
+      throw e;
     }
   }
   static async getById(id) {
@@ -92,19 +85,30 @@ export default class ProductsDAO {
       ];
       return await products.aggregate(pipeline).next();
     } catch (e) {
-      // here's how the InvalidId error is identified and handled
-      if (
-        e
-          .toString()
-          .startsWith(
-            "Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters"
-          )
-      ) {
-        return null;
-      }
-      // if (e.name === "Error") {return null} also good
-      console.error(`Something went wrong in getProductsByID: ${e}`);
+      logger.error(`Something went wrong, ${e.message}`, "getById()");
       throw e;
     }
   }
 }
+
+/*
+  static async addPart(product_id, part_id) {
+    try {
+      await products.updateOne(
+        { _id: ObjectId(product_id) },
+        {
+          $push: {
+            parts: {
+              $each: [ObjectId(part_id)],
+            },
+          },
+        }
+      );
+      return { success: true };
+    } catch (e) {
+      console.error(e.message);
+      return;
+    }
+  }
+
+*/
