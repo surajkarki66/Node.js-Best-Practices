@@ -1,4 +1,6 @@
 import { ObjectId } from "bson";
+
+import logger from "../utils/logger";
 let blogs;
 const DEFAULT_SORT = [["year", -1]];
 export default class BlogsDAO {
@@ -9,19 +11,21 @@ export default class BlogsDAO {
     try {
       blogs = await conn.db(process.env.NS).collection("blogs");
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error(
+        `Error while injecting DB: ${e.message}`,
+        "BlogsDAO.injectDB()"
+      );
+      throw e;
     }
   }
 
   static async create(blogInfo) {
     try {
-      const data = await blogs.insertOne(blogInfo);
-      const blog = data.ops[0];
-      return { success: true, blog };
+      const result = await blogs.insertOne(blogInfo);
+      return { data: { createdId: result.insertedId }, statusCode: 201 };
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error("Error occurred: " + e.message, "create()");
+      throw e;
     }
   }
   static textSearchQuery(text) {
@@ -43,43 +47,56 @@ export default class BlogsDAO {
     try {
       cursor = await blogs.find(query).project(project).sort(sort);
     } catch (e) {
-      console.error(`Unable to issue find command, ${e}`);
-      return { blogsList: [], totalNumBlogs: 0 };
+      logger.error(`Unable to issue find command, ${e.message}`);
+      return {
+        data: [],
+        totalNumBlogs: 0,
+        statusCode: 404,
+      };
     }
     const displayCursor = cursor
       .skip(parseInt(page) * parseInt(blogsPerPage))
       .limit(parseInt(blogsPerPage));
     try {
-      const blogsList = await displayCursor.toArray();
+      const documents = await displayCursor.toArray();
       const totalNumBlogs =
         parseInt(page) === 0 ? await blogs.countDocuments(query) : 0;
-      return { blogsList, totalNumBlogs };
+      return {
+        data: documents,
+        totalNumBlogs,
+        statusCode: documents.length > 0 ? 200 : 404,
+      };
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`
       );
-      return { blogsList: [], totalNumBlogs: 0 };
+      throw e;
     }
   }
   static async getById(id) {
     let cursor;
     try {
       const query = { _id: ObjectId(id) };
-      cursor = await blog.find(query).sort(DEFAULT_SORT);
+      cursor = await blogs.find(query).sort(DEFAULT_SORT);
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
-      );
-      return;
+      logger.error("Error occurred: " + e.message, "getById()");
+      throw e;
     }
     try {
       const blog = await cursor.toArray();
-      return blog;
+      if (blog) {
+        return { data: blog, statusCode: 200 };
+      } else {
+        const message = "No document matching id: " + id + " could be found!";
+        logger.error(message, "getById()");
+        return { data: [], statusCode: 404 };
+      }
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`,
+        "getById()"
       );
-      return;
+      throw e;
     }
   }
 }

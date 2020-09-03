@@ -5,7 +5,7 @@ export default class BlogController {
     try {
       const blogFromBody = req.body;
       const data = await BlogsDAO.create(blogFromBody);
-      if (data.success) {
+      if (data) {
         return res.status(201).json(data);
       }
     } catch (e) {
@@ -16,12 +16,12 @@ export default class BlogController {
   static async listBlogs(req, res, next) {
     try {
       const { page, blogsPerPage } = req.query;
-      const { blogsList, totalNumBlogs } = await BlogsDAO.getBlogs({
+      const { data, totalNumBlogs } = await BlogsDAO.getBlogs({
         page,
         blogsPerPage,
       });
       const response = {
-        blogs: blogsList,
+        blogs: data,
         page: page,
         filters: {},
         entries_per_page: blogsPerPage,
@@ -73,7 +73,7 @@ export default class BlogController {
       return;
     }
   }
-  static async getBlogById(req, res) {
+  static async getBlogById(req, res, next) {
     const id = req.params.id;
     try {
       const response = await BlogsDAO.getById(id);

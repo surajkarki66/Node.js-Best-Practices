@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 
 import app from "./server";
+import logger from "./utils/logger";
 import BlogsDAO from "./dao/blogsDAO";
 import StudentsDAO from "./dao/studentsDAO";
 import UsersDAO from "./dao/usersDAO";
@@ -17,7 +18,7 @@ MongoClient.connect(process.env.DB_URI, {
   useUnifiedTopology: true,
 })
   .catch((err) => {
-    console.error(err.stack);
+    logger.error(`Error connecting to the MongoDB URI: ${err.stack}`);
     process.exit(1);
   })
   .then(async (client) => {
@@ -27,6 +28,6 @@ MongoClient.connect(process.env.DB_URI, {
     await PartsDAO.injectDB(client);
     await ProductsDAO.injectDB(client);
     app.listen(port, () => {
-      console.log(`listening on port ${port}`);
+      logger.info(`Listening on PORT ${port}`);
     });
   });
