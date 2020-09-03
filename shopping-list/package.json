@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "pre-run": "mkdir -p ./logs",
-    "start": "npm run pre-run && nodemon --exec babel-node src/app.js"
+    "start": "npm run pre-run && nodemon --exec babel-node src/utils/load-mongodb.js"
   },
   "keywords": [],
   "author": "",
