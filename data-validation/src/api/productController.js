@@ -1,12 +1,13 @@
 import ProductsDAO from "../dao/productsDAO";
 import ApiError from "../error/ApiError";
+import writeServerJsonResponse from "../utils/utils";
 export default class ProductController {
   static async addProduct(req, res, next) {
     try {
       const product = req.body;
-      const data = await ProductsDAO.create(product);
-      if (data.success) {
-        res.status(201).json(data);
+      const result = await ProductsDAO.create(product);
+      if (result) {
+        writeServerJsonResponse(res, result.data, result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -16,18 +17,18 @@ export default class ProductController {
   static async listProduct(req, res, next) {
     try {
       const { page, productsPerPage } = req.query;
-      const { productsList, totalNumProducts } = await ProductsDAO.getProducts({
+      const result = await ProductsDAO.getProducts({
         page,
         productsPerPage,
       });
-      const response = {
-        products: productsList,
+      const product = {
+        products: result.data,
         page: page,
         filters: {},
         entries_per_page: productsPerPage,
-        total_results: totalNumProducts,
+        total_results: result.totalNumProducts,
       };
-      res.status(200).json(response);
+      writeServerJsonResponse(res, product, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
@@ -37,10 +38,9 @@ export default class ProductController {
   static async getProductById(req, res, next) {
     try {
       const id = req.params.id;
-      const response = await ProductsDAO.getById(id);
-      if (response) {
-        const product = response;
-        res.status(200).json(product);
+      const result = await ProductsDAO.getById(id);
+      if (result) {
+        writeServerJsonResponse(res, result, 200);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
