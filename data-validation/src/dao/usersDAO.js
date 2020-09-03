@@ -1,3 +1,4 @@
+import logger from "../utils/logger";
 let users;
 const DEFAULT_SORT = [["name", 1]];
 export default class UsersDAO {
@@ -7,21 +8,25 @@ export default class UsersDAO {
     }
     try {
       users = await conn.db(process.env.NS).collection("users");
-    } catch (e) {
-      console.error(
-        `Unable to establish collection handles in userDAO: ${e.message}`
+      logger.info(
+        `Connected to users collection of ${process.env.NS} database.`,
+        "UsersDAO.injectDB()"
       );
-      return;
+    } catch (e) {
+      logger.error(
+        `Error while injecting DB: ${e.message}`,
+        "UsersDAO.injectDB()"
+      );
+      throw e;
     }
   }
   static async create(userInfo) {
     try {
-      const data = await users.insertOne(userInfo);
-      const user = data.ops[0];
-      return { success: true, user };
+      const result = await users.insertOne(userInfo);
+      return { data: { createdId: result.insertedId }, statusCode: 201 };
     } catch (e) {
-      console.error(e.message);
-      return;
+      logger.error("Error occurred: " + e.message, "create()");
+      throw e;
     }
   }
   static async getUsers({ filters = null, page = 0, usersPerPage = 10 } = {}) {
@@ -32,22 +37,30 @@ export default class UsersDAO {
     try {
       cursor = await users.find(query).project(project).sort(sort);
     } catch (e) {
-      console.error(`Unable to issue find command, ${e}`);
-      return { usersList: [], totalNumUsers: 0 };
+      logger.error(`Unable to issue find command, ${e.message}`);
+      return {
+        data: [],
+        totalNumUsers: 0,
+        statusCode: 404,
+      };
     }
     const displayCursor = cursor
       .skip(parseInt(page) * parseInt(usersPerPage))
       .limit(parseInt(usersPerPage));
     try {
-      const usersList = await displayCursor.toArray();
+      const documents = await displayCursor.toArray();
       const totalNumUsers =
         parseInt(page) === 0 ? await users.countDocuments(query) : 0;
-      return { usersList, totalNumUsers };
+      return {
+        data: documents,
+        totalNumUsers,
+        statusCode: documents.length > 0 ? 200 : 404,
+      };
     } catch (e) {
-      console.error(
-        `Unable to convert cursor to array or problem counting documents, ${e}`
+      logger.error(
+        `Unable to convert cursor to array or problem counting documents, ${e.message}`
       );
-      return { usersList: [], totalNumUsers: 0 };
+      throw e;
     }
   }
 }

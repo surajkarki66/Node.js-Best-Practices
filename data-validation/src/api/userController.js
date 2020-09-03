@@ -1,12 +1,13 @@
 import UsersDAO from "../dao/usersDAO";
 import ApiError from "../error/ApiError";
+import writeServerJsonResponse from "../utils/utils";
 export default class UserController {
   static async addUser(req, res, next) {
     try {
       const user = req.body;
-      const data = await UsersDAO.create(user);
-      if (data.success) {
-        res.status(201).json({ success: true });
+      const result = await UsersDAO.create(user);
+      if (result) {
+        writeServerJsonResponse(res, result.data, result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -16,18 +17,18 @@ export default class UserController {
   static async listUser(req, res, next) {
     try {
       const { page, usersPerPage } = req.query;
-      const { usersList, totalNumUsers } = await UsersDAO.getUsers({
+      const result = await UsersDAO.getUsers({
         page,
         usersPerPage,
       });
-      const response = {
-        users: usersList,
+      const users = {
+        users: result.data,
         page: page,
         filters: {},
         entries_per_page: usersPerPage,
-        total_results: totalNumUsers,
+        total_results: result.totalNumUsers,
       };
-      res.status(200).json(response);
+      writeServerJsonResponse(res, users, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
