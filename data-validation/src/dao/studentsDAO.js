@@ -187,6 +187,7 @@ export default class StudentsDAO {
       return {
         ...results,
         ...count,
+        statusCode: 200,
       };
     } catch (e) {
       return { error: "Results too large, be more restrictive in filter" };

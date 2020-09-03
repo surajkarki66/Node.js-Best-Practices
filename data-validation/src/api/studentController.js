@@ -1,12 +1,13 @@
 import StudentsDAO from "../dao/studentsDAO";
 import ApiError from "../error/ApiError";
+import writeServerJsonResponse from "../utils/utils";
 export default class StudentController {
   static async addStudent(req, res, next) {
     try {
       const student = req.body;
-      const data = await StudentsDAO.create(student);
-      if (data.success) {
-        res.status(201).json({ success: true, data });
+      const result = await StudentsDAO.create(student);
+      if (result) {
+        writeServerJsonResponse(res, result.data, result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -16,18 +17,18 @@ export default class StudentController {
   static async listStudents(req, res, next) {
     try {
       const { page, studentsPerPage } = req.query;
-      const { studentsList, totalNumStudents } = await StudentsDAO.getStudents({
+      const result = await StudentsDAO.getStudents({
         page,
         studentsPerPage,
       });
-      const response = {
-        students: studentsList,
+      const student = {
+        students: result.data,
         page: page,
         filters: {},
         entries_per_page: studentsPerPage,
-        total_results: totalNumStudents,
+        total_results: result.totalNumStudents,
       };
-      return res.json(response);
+      writeServerJsonResponse(res, student, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
@@ -68,20 +69,20 @@ export default class StudentController {
         break;
     }
     try {
-      const { studentsList, totalNumStudents } = await StudentsDAO.getStudents({
+      const result = await StudentsDAO.getStudents({
         filters,
         page,
         studentsPerPage,
       });
 
-      const response = {
-        students: studentsList,
+      const student = {
+        students: result.data,
         page: page,
         filters,
         entries_per_page: studentsPerPage,
-        total_results: totalNumStudents,
+        total_results: result.totalNumStudents,
       };
-      res.status(200).json(response);
+      writeServerJsonResponse(res, student, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
@@ -90,10 +91,9 @@ export default class StudentController {
   static async getStudentsById(req, res, next) {
     const id = req.params.id;
     try {
-      const response = await StudentsDAO.getById(id);
-      if (response) {
-        const student = response[0];
-        res.status(200).json(student);
+      const result = await StudentsDAO.getById(id);
+      if (result) {
+        writeServerJsonResponse(res, result.data[0], result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -111,7 +111,7 @@ export default class StudentController {
         page,
         studentsPerPage,
       });
-      const response = {
+      const students = {
         students: facetedSearchResult.students,
         facets: {
           year: facetedSearchResult.year,
@@ -123,7 +123,7 @@ export default class StudentController {
         total_results: facetedSearchResult.count,
       };
 
-      res.status(200).json(response);
+      writeServerJsonResponse(res, students, facetedSearchResult.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
