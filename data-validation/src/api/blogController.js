@@ -1,12 +1,13 @@
 import BlogsDAO from "../dao/blogsDAO";
 import ApiError from "../error/ApiError";
+import writeServerJsonResponse from "../utils/utils";
 export default class BlogController {
   static async addBlog(req, res, next) {
     try {
       const blogFromBody = req.body;
-      const data = await BlogsDAO.create(blogFromBody);
-      if (data) {
-        return res.status(201).json(data);
+      const result = await BlogsDAO.create(blogFromBody);
+      if (result) {
+        writeServerJsonResponse(res, result.data, result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
@@ -16,18 +17,19 @@ export default class BlogController {
   static async listBlogs(req, res, next) {
     try {
       const { page, blogsPerPage } = req.query;
-      const { data, totalNumBlogs } = await BlogsDAO.getBlogs({
+      const result = await BlogsDAO.getBlogs({
         page,
         blogsPerPage,
       });
-      const response = {
-        blogs: data,
+
+      const blogs = {
+        blogs: result.data,
         page: page,
         filters: {},
         entries_per_page: blogsPerPage,
-        total_results: totalNumBlogs,
+        total_results: result.totalNumBlogs,
       };
-      res.status(200).json(response);
+      writeServerJsonResponse(res, blogs, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
@@ -54,20 +56,20 @@ export default class BlogController {
         break;
     }
     try {
-      const { blogsList, totalNumBlogs } = await BlogsDAO.getBlogs({
+      const result = await BlogsDAO.getBlogs({
         filters,
         page,
         blogsPerPage,
       });
 
-      const response = {
-        blogs: blogsList,
+      const blogs = {
+        blogs: result.data,
         page: page,
         filters,
         entries_per_page: blogsPerPage,
-        total_results: totalNumBlogs,
+        total_results: result.totalNumBlogs,
       };
-      res.status(200).json(response);
+      writeServerJsonResponse(res, blogs, result.statusCode);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;
@@ -76,10 +78,9 @@ export default class BlogController {
   static async getBlogById(req, res, next) {
     const id = req.params.id;
     try {
-      const response = await BlogsDAO.getById(id);
-      if (response) {
-        const blog = response[0];
-        res.status(200).json(blog);
+      const result = await BlogsDAO.getById(id);
+      if (result) {
+        writeServerJsonResponse(res, result.data[0], result.statusCode);
       }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
