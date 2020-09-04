@@ -8,7 +8,7 @@ class AccountsDAO {
       return;
     }
     try {
-      accounts = await conn.db(process.env.MFLIX_NS).collection("accounts");
+      accounts = await conn.db("tutorial").collection("accounts");
       logger.info(
         `Connected to accounts collection of ${process.env.NS} database.`,
         "AccountsDAO.injectDB()"
@@ -35,9 +35,11 @@ class AccountsDAO {
           email: userInfo.email,
           password: userInfo.password,
         },
-        { w: 2 }
+        { w: "major" }
       );
-      return { data: { createdId: result.insertedId }, statusCode: 201 };
+      const data = result.ops[0];
+
+      return { data: data, statusCode: 201 };
     } catch (e) {
       logger.error(
         "Error occurred while adding new user: " + e.message,

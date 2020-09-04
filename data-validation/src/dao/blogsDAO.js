@@ -108,3 +108,33 @@ export default class BlogsDAO {
     }
   }
 }
+
+/*
+// Get a DB connection when this module is loaded
+(function getDbConnection() {
+    logger.info('Initializing MongoDB connection...', 'lists-dao-mongogb.getDbConnection()');
+    utils.dbConnect().then((database) => {
+        logger.info('MongoDB connection initialized.', 'lists-dao-mongogb.getDbConnection()');
+        db = database;
+    }).catch((err) => {
+        logger.error('Error while initializing DB: ' + err.message, 'lists-dao-mongogb.getDbConnection()');
+        throw err;
+    });
+})();
+
+
+function fetchAll() {
+  return new Promise((resolve, reject) => {
+      let lists = db.collection('shoppingLists');
+      lists.find({}).toArray((err, documents) => {
+          if (err) {
+              logger.error('Error occurred: ' + err.message, 'fetchAll()');
+              reject(err);
+          } else {
+              logger.debug('Raw data: ' + JSON.stringify(documents), 'fetchAll()');
+              resolve({ data: JSON.stringify(documents), statusCode: (documents.length > 0) ? 200 : 404 });
+          }
+      });
+  });
+}
+*/

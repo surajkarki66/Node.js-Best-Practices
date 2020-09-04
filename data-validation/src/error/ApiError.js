@@ -9,6 +9,9 @@ class ApiError {
   static internal(msg) {
     return new ApiError(500, msg);
   }
+  static conflict(msg) {
+    return new ApiError(409, msg);
+  }
 }
 
 export default ApiError;
