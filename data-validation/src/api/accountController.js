@@ -81,7 +81,7 @@ export default class UserController {
       const { username, password } = req.body;
       const userData = await AccountsDAO.getUserByUsername(username);
       if (!userData) {
-        next(ApiError.unauthorized("Make sure your email is correct."));
+        next(ApiError.unauthorized("Make sure your username is correct."));
         return;
       }
       const user = new Account(userData);

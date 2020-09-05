@@ -48,6 +48,19 @@ class AccountsDAO {
       throw e;
     }
   }
+  static async deleteUser(email) {
+    try {
+      await accounts.deleteOne({ email });
+      if (!(await this.getUserByEmail(email))) {
+        return { success: true };
+      } else {
+        return { error: `Deletion unsuccessful` };
+      }
+    } catch (e) {
+      logger.error(`Error occurred while deleting user, ${e}`, "deleteUser()");
+      throw e;
+    }
+  }
 }
 
 export default AccountsDAO;
