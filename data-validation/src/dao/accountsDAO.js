@@ -35,7 +35,7 @@ class AccountsDAO {
           email: userInfo.email,
           password: userInfo.password,
         },
-        { w: "major" }
+        { w: 2 }
       );
       const data = result.ops[0];
 

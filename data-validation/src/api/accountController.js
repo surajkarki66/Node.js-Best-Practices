@@ -100,26 +100,21 @@ export default class UserController {
   static async delete(req, res, next) {
     try {
       const { password } = req.body;
-      const userJwt = req.get("Authorization").slice("Bearer ".length);
-      const decoded_user = await User.decoded(userJwt);
-      const { error } = decoded_user;
-      if (error) {
-        next(ApiError.unauthorized(error));
-        return;
-      }
-      const user = new User(await UsersDAO.getUserByEmail(decoded_user.email));
+      const decoded_user = req.jwt;
+      const user = new Account(
+        await AccountsDAO.getUserByEmail(decoded_user.email)
+      );
       if (!(await user.comparePassword(password))) {
         next(ApiError.unauthorized("Make sure your password is correct."));
         return;
       }
-      const deleteResult = await UsersDAO.deleteUser(decoded_user.email);
+      const deleteResult = await AccountsDAO.deleteUser(decoded_user.email);
       const { error } = deleteResult;
       if (error) {
         next(ApiError.internal(error));
         return;
       }
       writeServerJsonResponse(res, deleteResult, 200);
-      res.json(deleteResult);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;

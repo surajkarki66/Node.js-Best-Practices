@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import accountCtrl from "./accountController";
+import checkAuth from "../middleware/auth-validation";
 import dataValidation from "../middleware/data-validation";
 import accountSchemas from "../helper/accountSchema";
 
@@ -14,5 +15,11 @@ router
   .route("/login")
   .post(dataValidation(accountSchemas.accountLOGIN, "body"))
   .post(accountCtrl.login);
+
+router
+  .route("/delete")
+  .post(checkAuth)
+  .post(dataValidation(accountSchemas.accountDELETE, "body"))
+  .post(accountCtrl.delete);
 
 export default router;
