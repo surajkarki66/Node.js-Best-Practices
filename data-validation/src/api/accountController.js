@@ -76,4 +76,24 @@ export default class UserController {
       return;
     }
   }
+  static async login(req, res, next) {
+    try {
+      const { username, password } = req.body;
+      const userData = await AccountsDAO.getUserByUsername(username);
+      if (!userData) {
+        next(ApiError.unauthorized("Make sure your email is correct."));
+        return;
+      }
+      const user = new Account(userData);
+      if (!(await user.comparePassword(password))) {
+        next(ApiError.unauthorized("Make sure your password is correct."));
+        return;
+      }
+      const data = { auth_token: user.encoded(), info: user.toJson() };
+      writeServerJsonResponse(res, data, 200);
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
 }

@@ -12,6 +12,9 @@ class ApiError {
   static conflict(msg) {
     return new ApiError(409, msg);
   }
+  static unauthorized(msg) {
+    return new ApiError(401, msg);
+  }
 }
 
 export default ApiError;
