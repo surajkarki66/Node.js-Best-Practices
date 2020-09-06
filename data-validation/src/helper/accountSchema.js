@@ -29,5 +29,9 @@ const schemas = {
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
       .required(),
   }),
+  accountLIST: Joi.object().keys({
+    page: Joi.number().required(),
+    usersPerPage: Joi.number().required(),
+  }),
 };
 export default schemas;
