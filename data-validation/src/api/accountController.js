@@ -8,15 +8,17 @@ import AccountsDAO from "../dao/accountsDAO";
 const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
 export class Account {
-  constructor({ username, email, password } = {}) {
+  constructor({ username, email, password, role } = {}) {
     this.username = username;
     this.email = email;
     this.password = password;
+    this.role = role;
   }
   toJson() {
     return {
       username: this.username,
       email: this.email,
+      role: this.role,
     };
   }
   async comparePassword(plainText) {

@@ -8,6 +8,7 @@ const schemas = {
         tlds: { allow: ["com", "net"] },
       })
       .required(),
+    role: Joi.string().valid("basic", "supervisor", "admin").required(),
     password: Joi.string()
       .min(8)
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))

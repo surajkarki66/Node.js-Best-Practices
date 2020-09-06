@@ -34,6 +34,7 @@ class AccountsDAO {
           username: userInfo.username,
           email: userInfo.email,
           password: userInfo.password,
+          role: userInfo.role,
         },
         { w: 2 }
       );
