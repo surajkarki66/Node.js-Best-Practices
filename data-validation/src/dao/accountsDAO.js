@@ -110,6 +110,19 @@ class AccountsDAO {
       throw e;
     }
   }
+  static updateUser(id, updateObject) {
+    try {
+      const result = await accounts.updateOne({_id: ObjectId(id)},
+      {$set: updateObject}
+      )
+      if (result) {
+        return {success: true};
+      }
+    } catch(e) {
+      logger.error(`Error occurred while updating user, ${e}`, "updateUser()");
+      throw e;
+    }
+  }
   static async deleteUser(email) {
     try {
       await accounts.deleteOne({ email });
