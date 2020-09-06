@@ -8,7 +8,8 @@ import AccountsDAO from "../dao/accountsDAO";
 const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
 export class Account {
-  constructor({ username, email, password, role } = {}) {
+  constructor({ _id, username, email, password, role } = {}) {
+    this._id = _id;
     this.username = username;
     this.email = email;
     this.password = password;
@@ -16,6 +17,7 @@ export class Account {
   }
   toJson() {
     return {
+      userId: this._id,
       username: this.username,
       email: this.email,
       role: this.role,
@@ -64,7 +66,6 @@ export default class UserController {
         const userFromDb = {
           username: insertResult.data.username,
           email: insertResult.data.email,
-          password: insertResult.data.password,
         };
         const account = new Account(userFromDb);
         const data = {
@@ -138,6 +139,18 @@ export default class UserController {
         total_results: result.totalNumUsers,
       };
       writeServerJsonResponse(res, users, result.statusCode);
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
+  static async getAccountById(req, res, next) {
+    const id = req.params.id;
+    try {
+      const result = await AccountsDAO.getUserById(id);
+      if (result) {
+        writeServerJsonResponse(res, result.data[0], result.statusCode);
+      }
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;

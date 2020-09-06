@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 import logger from "../utils/logger";
 
 let accounts;

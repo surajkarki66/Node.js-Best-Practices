@@ -1,9 +1,13 @@
 import { Router } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 import accountCtrl from "./accountController";
 import checkAuth from "../middleware/auth-validation";
 import dataValidation from "../middleware/data-validation";
 import accountSchemas from "../helper/accountSchema";
+
+const permission = require("../middleware/auth-permission");
 const router = new Router();
 router
   .route("/signup")
@@ -25,6 +29,14 @@ router
   .route("/users")
   .get(checkAuth)
   .get(dataValidation(accountSchemas.accountLIST, "query"))
+  .get(permission.onlyAdminCanDoThisAction)
   .get(accountCtrl.listAccounts);
+
+router
+  .route("/:id")
+  .get(checkAuth)
+  .get(dataValidation(accountSchemas.accountDETAIL, "params"))
+  .get(permission.onlySameUserOrAdminCanDoThisAction)
+  .get(accountCtrl.getAccountById);
 
 export default router;
