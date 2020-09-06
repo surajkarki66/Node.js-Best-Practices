@@ -64,8 +64,10 @@ export default class UserController {
         };
         const insertResult = await AccountsDAO.addUser(userInfo);
         const userFromDb = {
+          _id: insertResult.data._id,
           username: insertResult.data.username,
           email: insertResult.data.email,
+          role: insertResult.data.role,
         };
         const account = new Account(userFromDb);
         const data = {
@@ -100,29 +102,6 @@ export default class UserController {
     }
   }
 
-  static async delete(req, res, next) {
-    try {
-      const { password } = req.body;
-      const decoded_user = req.jwt;
-      const user = new Account(
-        await AccountsDAO.getUserByEmail(decoded_user.email)
-      );
-      if (!(await user.comparePassword(password))) {
-        next(ApiError.unauthorized("Make sure your password is correct."));
-        return;
-      }
-      const deleteResult = await AccountsDAO.deleteUser(decoded_user.email);
-      const { error } = deleteResult;
-      if (error) {
-        next(ApiError.internal(error));
-        return;
-      }
-      writeServerJsonResponse(res, deleteResult, 200);
-    } catch (e) {
-      next(ApiError.internal(`Something went wrong: ${e.message}`));
-      return;
-    }
-  }
   static async listAccounts(req, res, next) {
     try {
       const { page, usersPerPage } = req.query;
@@ -151,6 +130,56 @@ export default class UserController {
       if (result) {
         writeServerJsonResponse(res, result.data[0], result.statusCode);
       }
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
+
+  static async update(req, res, next) {
+    try {
+      const userFromBody = req.body;
+      const id = req.params.id;
+      const decoded_user = req.jwt;
+      const user = new Account(
+        await AccountsDAO.getUserByEmail(decoded_user.email)
+      );
+      if (!(await user.comparePassword(userFromBody.password))) {
+        next(ApiError.unauthorized("Make sure your password is correct."));
+        return;
+      }
+      const updateInfo = {
+        ...userFromBody,
+        password: await hashPassword(userFromBody.password),
+      };
+      const updateResult = await AccountsDAO.updateUser(id, updateInfo);
+      if (updateResult) {
+        writeServerJsonResponse(res, updateResult, 200);
+      }
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
+
+  static async delete(req, res, next) {
+    try {
+      const { password } = req.body;
+      const decoded_user = req.jwt;
+      const user = new Account(
+        await AccountsDAO.getUserByEmail(decoded_user.email)
+      );
+      if (!(await user.comparePassword(password))) {
+        next(ApiError.unauthorized("Make sure your password is correct."));
+        return;
+      }
+      const deleteResult = await AccountsDAO.deleteUser(decoded_user.email);
+      const { error } = deleteResult;
+      if (error) {
+        next(ApiError.internal(error));
+        return;
+      }
+      writeServerJsonResponse(res, deleteResult, 200);
     } catch (e) {
       next(ApiError.internal(`Something went wrong: ${e.message}`));
       return;

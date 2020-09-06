@@ -39,4 +39,11 @@ router
   .get(permission.onlySameUserOrAdminCanDoThisAction)
   .get(accountCtrl.getAccountById);
 
+router
+  .route("/update/:id")
+  .post(checkAuth)
+  .post(dataValidation(accountSchemas.accountUPDATE, "body"))
+  .post(permission.onlySameUserOrAdminCanDoThisAction)
+  .post(accountCtrl.update);
+
 export default router;
