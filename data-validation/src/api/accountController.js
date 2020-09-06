@@ -122,4 +122,25 @@ export default class UserController {
       return;
     }
   }
+  static async listAccounts(req, res, next) {
+    try {
+      const { page, usersPerPage } = req.query;
+      const result = await AccountsDAO.getUsers({
+        page,
+        usersPerPage,
+      });
+
+      const users = {
+        users: result.data,
+        page: page,
+        filters: {},
+        entries_per_page: usersPerPage,
+        total_results: result.totalNumUsers,
+      };
+      writeServerJsonResponse(res, users, result.statusCode);
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
 }

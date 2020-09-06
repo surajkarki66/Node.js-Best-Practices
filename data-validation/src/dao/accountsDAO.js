@@ -41,7 +41,7 @@ class AccountsDAO {
     try {
       const documents = await displayCursor.toArray();
       const totalNumUsers =
-        parseInt(page) === 0 ? await users.countDocuments(query) : 0;
+        parseInt(page) === 0 ? await accounts.countDocuments({}) : 0;
       return {
         data: documents,
         totalNumUsers,

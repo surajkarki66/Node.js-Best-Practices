@@ -22,4 +22,10 @@ router
   .post(dataValidation(accountSchemas.accountDELETE, "body"))
   .post(accountCtrl.delete);
 
+router
+  .route("/users")
+  .get(checkAuth)
+  .get(dataValidation(accountSchemas.accountLIST, "query"))
+  .get(accountCtrl.listAccounts);
+
 export default router;
