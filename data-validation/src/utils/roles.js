@@ -1,7 +1,7 @@
 import AccessControl from "accesscontrol";
 const ac = new AccessControl();
 
-exports.roles = (function () {
+const roles = (function () {
   ac.grant("basic").readOwn("accounts").updateOwn("accounts");
 
   ac.grant("supervisor").extend("basic").readAny("accounts");
@@ -14,3 +14,5 @@ exports.roles = (function () {
 
   return ac;
 })();
+
+export default roles;

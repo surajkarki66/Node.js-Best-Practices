@@ -4,7 +4,7 @@ import accountCtrl from "./accountController";
 import checkAuth from "../middleware/auth-validation";
 import dataValidation from "../middleware/data-validation";
 import accountSchemas from "../helper/accountSchema";
-
+import grantAccess from "../middleware/permission";
 const router = new Router();
 router
   .route("/signup")
