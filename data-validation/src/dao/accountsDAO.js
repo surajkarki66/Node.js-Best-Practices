@@ -96,8 +96,8 @@ class AccountsDAO {
           email: userInfo.email,
           password: userInfo.password,
           role: userInfo.role,
-        }
-        // { w: 2 }
+        },
+        { w: 2 }
       );
       const data = result.ops[0];
 
@@ -112,7 +112,6 @@ class AccountsDAO {
   }
   static async updateUser(id, updateObject) {
     try {
-      console.log(updateObject);
       const result = await accounts.updateOne(
         { _id: ObjectId(id) },
         { $set: updateObject }
