@@ -48,5 +48,15 @@ const schemas = {
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
       .required(),
   }),
+  accountRESETPASSWORD: Joi.object().keys({
+    oldPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+      .required(),
+    newPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+      .required(),
+  }),
 };
 export default schemas;

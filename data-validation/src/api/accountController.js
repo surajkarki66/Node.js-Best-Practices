@@ -162,6 +162,31 @@ export default class UserController {
     }
   }
 
+  static async resetPassword(req, res, next) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const id = req.params.id;
+      const decoded_user = req.jwt;
+      const user = new Account(
+        await AccountsDAO.getUserByEmail(decoded_user.email)
+      );
+      if (!(await user.comparePassword(oldPassword))) {
+        next(ApiError.unauthorized("Make sure your password is correct."));
+        return;
+      }
+      const updateInfo = {
+        password: await hashPassword(newPassword),
+      };
+      const updateResult = await AccountsDAO.updateUser(id, updateInfo);
+      if (updateResult) {
+        writeServerJsonResponse(res, updateResult, 200);
+      }
+    } catch (e) {
+      next(ApiError.internal(`Something went wrong: ${e.message}`));
+      return;
+    }
+  }
+
   static async delete(req, res, next) {
     try {
       const { password } = req.body;

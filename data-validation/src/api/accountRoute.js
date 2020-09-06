@@ -46,4 +46,10 @@ router
   .post(permission.onlySameUserOrAdminCanDoThisAction)
   .post(accountCtrl.update);
 
+router
+  .route("/resetPassword/:id")
+  .post(checkAuth)
+  .post(dataValidation(accountSchemas.accountRESETPASSWORD, "body"))
+  .post(permission.sameUserCantDoThisAction)
+  .post(accountCtrl.resetPassword);
 export default router;

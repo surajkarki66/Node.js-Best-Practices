@@ -38,7 +38,7 @@ exports.sameUserCantDoThisAction = (req, res, next) => {
   } else if (req.params && req.body.id && req.body.id === userId) {
     return next();
   } else {
-    next(ApiError.badRequest("Something went wrong."));
+    next(ApiError.badRequest("Access denied."));
     return;
   }
 };
